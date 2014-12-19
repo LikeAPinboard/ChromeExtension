@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>pinboard_action</title>
+        <link rel="stylesheet" href="popup.css">
+    </head>
+    <body>
+        <form action="" method="post">
+            <table class="pb-table">
+                <tbody>
+                    <tr>
+                        <th>URL:</th>
+                        <td><input type="text" class="pb-input" name="url" id="js-url"></td>
+                    </tr>
+                    <tr>
+                        <th>title:</th>
+                        <td><input type="text" class="pb-input" name="title" id="js-title"></td>
+                    </tr>
+                    <tr>
+                        <th>tags:</th>
+                        <td><div class="tag-wrapper"></div><input type="text" class="pb-input" name="tags" id="js-tags" placeholder="Type Space to create Tag"></td>
+                    </tr>
+                    <tr>
+                        <th>description:</th>
+                        <td><textarea name="description" class="pb-description" id="js-description"></textarea></td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="pb-submit">
+                <button class="pb-submitbtn" id="js-submit">Regist</button>
+            </p>
+
+        </form>
+        <div class="overlay hidden"></div>
+        <a href="javascript:void" class="pb-configuration"></a>
+        <div class="pb-settingform hidden">
+            <h4 class="pb-hostcaption">Input your server host:<span class="pb-hosterror hidden"></span></h4>
+            <p><input type="text" name="host" class="pb-hostinput"></p>
+            <h4 class="pb-tokencaption">Input token:<span class="pb-tokenerror hidden"></span></h4>
+            <p><input type="text" name="token" class="pb-tokeninput"></p>
+            <p class="pb-tokeninfo"><a href="#">You don't have a token, or did you forget?</a></p>
+            <p class="pb-tokensavebtn"><button class="pb-tokensave">save</button></p>
+        </div>
+        <div class="pb-message hidden"><p class="loading"></p></div>
+        <script src="popup.js"></script>
+    </body>
+</html>
+
