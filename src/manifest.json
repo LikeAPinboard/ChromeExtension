@@ -1,8 +1,8 @@
 {
 	"manifest_version": 2,
 	"version": "0.1",
-	"name": "pinboard_extension",
-	"description": "Add site API call interface extension",
+	"name": "LikeAPinboard",
+	"description": "LikeAPinboard Add Pin Tool",
 	"icons": {
 		"48": "icon48.png",
 		"128": "icon128.png"
@@ -17,7 +17,7 @@
 	},
 	"page_action": {
 		"default_icon": "icon_default.png",
-		"default_title": "pinboard_extension",
+		"default_title": "LikeAPinboard",
 		"default_popup": "popup.html"
 	}
 }

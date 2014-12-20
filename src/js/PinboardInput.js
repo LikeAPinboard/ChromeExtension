@@ -129,7 +129,7 @@ PinboardInput.prototype.showConfiguration = function(lock) {
         tf.setToken(json);
         tf.show(lock);
     } catch ( e ) {
-        tf.setToken({host: "", token: ""});
+        tf.setToken({requestHost: "", token: ""});
         tf.show(lock);
     }
 

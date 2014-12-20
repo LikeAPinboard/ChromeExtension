@@ -245,7 +245,7 @@ TokenForm.prototype.acceptRequest = function(host, token) {
 
         xhr.open("GET", host + "/accept", true);
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-        xhr.setRequestHeader("X-LAP-Token", "token");
+        xhr.setRequestHeader("X-LAP-Token", token);
         xhr.send(null);
     };
 };

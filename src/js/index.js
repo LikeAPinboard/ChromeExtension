@@ -22,19 +22,28 @@ var GETTING_TOKEN_PATH = "/generate";
 window.addEventListener("load", function() {
     var pi = new PinboardInput();
 
-    // Did you save settings at localStorage?
-    if ( ! localStorage.getItem("pinboard-token") ) {
-        pi.showConfiguration(true);
-    }
-
     // Get active tab's url and title
     chrome.tabs.getSelected(null, function(tab) {
         pi.setUrl(tab.url);
         pi.setTitle(tab.title);
-        // A few delay
-        setTimeout(function() {
-            pi.focus("tags");
-        }, 50);
+
+        // Did you save settings at localStorage?
+        if ( ! localStorage.getItem("pinboard-token") ) {
+            pi.showConfiguration(true);
+
+            chrome.tabs.executeScript(null, { "file": "inject.js" }, function(list) {
+                if ( list[0] ) {
+                    var tf = TokenForm.getInstance();
+
+                    tf.setToken(list[0]);
+                }
+            });
+        } else {
+            // A few delay
+            setTimeout(function() {
+                pi.focus("tags");
+            }, 50);
+        }
     });
 });
 
