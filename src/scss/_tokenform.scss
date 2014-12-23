@@ -4,7 +4,19 @@
     color: #fff;
 }
 
+.pb-close {
+    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAtElEQVRIx82Vyw3EIAwFU06qyCENUwGd0AZK/KTIe9iVDCT89A5ZjrZnJAyYZfmThU28BLhz7VWeK5wE8dhy/IJCoRKPvYUfu8Rf5ZUoxH+DPYXhUKh4EwQL1xU5DpVgW3Bp4llR4lC4pDFlslTccYlZw58KTNHOdouG8HrhMF5TTOCVXs/gPcUA3lIM4jXFBE4LyC2QTSSPkbxI5FUmHxP5nOmBQo80eqjSY53+WOiv7dX1AclwhQ5B/+/hAAAAAElFTkSuQmCC") top left no-repeat;
+    background-size: 24px 24px;
+    display: block;
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    top: -46px;
+    right: -36px;
+}
+
 .pb-tokencaption,
+.pb-categorycaption,
 .pb-hostcaption {
     font-size: 18px;
     font-weight: normal;
@@ -14,6 +26,7 @@
 }
 
 .pb-hostinput,
+.pb-categoryinput,
 .pb-tokeninput {
     border: solid 1px #ccc;
     width: 392px;
@@ -23,16 +36,19 @@
 }
 
 .pb-tokenerror,
+.pb-categoryerror,
 .pb-hosterror {
     color: #ff0;
     margin-left: 6px;
 }
 
-.pb-tokensavebtn {
+.pb-tokensavebtn,
+.pb-categorysavebtn {
     text-align: right;
 }
 
-.pb-tokensave {
+.pb-tokensave,
+.pb-categorysave {
     width: 60px;
     height: 40px;
     font-size: 20px;

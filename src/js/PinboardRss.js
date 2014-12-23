@@ -6,20 +6,17 @@
  * @copyright Yoshiaki Sugimoto all rights reserved.
  */
 
-//= require TokenForm.js
-//= require TagControl.js
-
 /**
- * Pin data input manager class
+ * Rss input manager class
  *
- * @class PinboardInput
+ * @class PinboardRss
  * @constructor
  */
-function PinboardInput(form) {
-    this.form         = form;
-    this.registBtn    = null;
-    this.config       = null;
-    this.tagControl   = null;
+function PinboardRss(form) {
+    this.form      = form;
+    this.add       = null;
+    this.category  = null;
+    this.registBtn = null;
 
     this.initialize();
 }
@@ -31,13 +28,47 @@ function PinboardInput(form) {
  * @private
  * @return Void
  */
-PinboardInput.prototype.initialize = function() {
-    this.registBtn  = this.form.querySelector(".pb-submitbtn");
-    this.config     = document.querySelector(".pb-configuration");
-    this.tagControl = new TagControl(this.form.querySelector("[name=tags]"));
+PinboardRss.prototype.initialize = function() {
+    this.registBtn = this.form.querySelector(".pb-submitbtn");
+    this.category  = this.form.querySelector("[name=category]");
+    this.add       = this.form.querySelector(".pb-add");
 
     this.registBtn.addEventListener("click", this);
-    this.config.addEventListener("click", this);
+    this.add.addEventListener("click", this);
+
+    this.refreshCategory();
+}
+
+/**
+ * Refresh category
+ *
+ * @method refreshCategory
+ * @public
+ * @return Void
+ */
+PinboardRss.prototype.refreshCategory = function() {
+    try {
+        var setting  = JSON.parse(localStorage.getItem("pinboard-token")),
+            category = JSON.parse(setting.categories) || [];
+
+        // first cleanup
+        while ( this.category.firstChild ) {
+            this.category.removeChild(this.category.firstChild);
+        }
+
+        // second add
+        category.forEach(function(cat) {
+            var o = document.createElement("option");
+
+            o.value = cat.id;
+            o.appendChild(document.createTextNode(cat.name));
+
+            this.category.appendChild(o);
+        }.bind(this));
+
+    } catch ( e ) {
+        console.log(e.message);
+    }
 };
 
 /**
@@ -48,30 +79,20 @@ PinboardInput.prototype.initialize = function() {
  * @param Event evt
  * @return Void
  */
-PinboardInput.prototype.handleEvent = function(evt) {
+PinboardRss.prototype.handleEvent = function(evt) {
     evt.preventDefault();
+    evt.stopPropagation();
 
     switch ( evt.currentTarget ) {
         case this.registBtn:
             // pushed regist button
-            this.sendPinData();
+            this.sendRssData();
             break;
-        case this.config:
-            evt.preventDefault();
-            this.toggleConfig();
+        case this.add:
+            // pushed add button
+            this.addCategory();
             break;
     }
-};
-
-/**
- * Toggle config
- *
- * @method toggleConfig
- * @public
- * @return Void
- */
-PinboardInput.prototype.toggleConfig = function() {
-    ( TokenForm.isHidden() ) ? this.showConfiguration() : this.hideConfiguration();
 };
 
 /**
@@ -82,7 +103,7 @@ PinboardInput.prototype.toggleConfig = function() {
  * @param String url
  * @return Void
  */
-PinboardInput.prototype.setUrl = function(url) {
+PinboardRss.prototype.setUrl = function(url) {
     this.form.querySelector("[name=url]").value = url;
 };
 
@@ -94,7 +115,7 @@ PinboardInput.prototype.setUrl = function(url) {
  * @param String title
  * @return Void
  */
-PinboardInput.prototype.setTitle = function(title) {
+PinboardRss.prototype.setTitle = function(title) {
     this.form.querySelector("[name=title]").value = title;
 };
 
@@ -106,75 +127,63 @@ PinboardInput.prototype.setTitle = function(title) {
  * @param String name
  * @return Void
  */
-PinboardInput.prototype.focus = function(name) {
+PinboardRss.prototype.focus = function(name) {
     this.form.querySelector("[name=" + name + "]").focus();
 };
 
 /**
- * Show config window
+ * Add new category
  *
- * @method showConfiguration
+ * @method addCategory
  * @public
- * @param Boolean lock
  * @return Void
  */
-PinboardInput.prototype.showConfiguration = function(lock) {
-    var tf = TokenForm.getInstance(),
-        v  = localStorage.getItem("pinboard-token"),
-        json;
+PinboardRss.prototype.addCategory = function() {
+    var cf = CategoryForm.getInstance();
 
-    try {
-        json = JSON.parse(v);
-        tf.setToken(json);
-        tf.show(lock);
-    } catch ( e ) {
-        tf.setToken({requestHost: "", token: ""});
-        tf.show(lock);
-    }
-
+    cf.show();
+    cf.onAdded = this.refreshCategory.bind(this);
 };
 
 /**
- * Hide config window
+ * Send rss data to server
  *
- * @method hideConfiguration
+ * @method sendRssData
  * @public
  * @return Void
  */
-PinboardInput.prototype.hideConfiguration = function() {
-    var tf = TokenForm.getInstance();
-
-    if ( tf.isLocked() ) {
-        return;
-    }
-
-    tf.hide();
-};
-
-/**
- * Send pin data to server
- *
- * @method sendPinData
- * @public
- * @return Void
- */
-PinboardInput.prototype.sendPinData = function() {
-    var nodes    = this.form.querySelectorAll("input[type=text], textarea"),
+PinboardRss.prototype.sendRssData = function() {
+    var nodes    = this.form.querySelectorAll("input[type=text]"),
         postData = [],
         config   = JSON.parse(localStorage.getItem("pinboard-token")),
         xhr      = new XMLHttpRequest(),
-        loading  = new Message("Sending pin data...");
+        loading  = new Message("Sending RSS data..."),
+        errors   = [];
 
     [].forEach.call(nodes, function(node) {
-        if ( node.name === "tags" ) {
-            return;
+        if ( node.value === "" ) {
+            errors.push(function() {
+                var span = document.createElement("span");
+
+                span.classList.add("pb-inputerror");
+                span.appendChild(document.createTextNode(node.name + " must not be empty!"));
+
+                node.parentNode.appendChild(span);
+            });
         }
         postData.push(encodeURIComponent(node.name) + "=" + encodeURIComponent(node.value));
     });
 
-    this.tagControl.getTagList().forEach(function(tag) {
-        postData.push("tag=" + encodeURIComponent(tag));
-    });
+    if ( errors.length > 0 ) {
+        errors.forEach(function(fn) {
+            fn();
+        });
+        return;
+    } else {
+        [].forEach.call(this.form.querySelectorAll(".pb-tokenerror"), function(element) {
+            element.parentNode.removeChild(element);
+        });
+    }
 
     xhr.onload = function() {
         var isError = ( xhr.status !== 200 ) ? true : false;
@@ -195,7 +204,7 @@ PinboardInput.prototype.sendPinData = function() {
     loading.setLoading(true);
     loading.show();
 
-    xhr.open("POST", config.requestHost + API_SERVER_PATH, true);
+    xhr.open("POST", config.requestHost + API_RSS_SERVER_PATH, true);
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     xhr.setRequestHeader("X-LAP-Token", config.token);
@@ -210,7 +219,7 @@ PinboardInput.prototype.sendPinData = function() {
  * @param String message
  * @return Object
  */
-PinboardInput.prototype.parseMessage = function(message) {
+PinboardRss.prototype.parseMessage = function(message) {
     var json;
 
     try {
@@ -235,11 +244,10 @@ PinboardInput.prototype.parseMessage = function(message) {
  * @param Boolean isError
  * @return Void
  */
-PinboardInput.prototype.handleResponse = function(response, loading, isError) {
+PinboardRss.prototype.handleResponse = function(response, loading, isError) {
     var json     = this.parseMessage(response),
         message  = new Message(json.message, isError),
-        duration = ( isError ) ? 2000 : 1600,
-        setting;
+        duration = ( isError ) ? 2000 : 1600;
 
     loading.hide();
     message.show(duration, !isError);
