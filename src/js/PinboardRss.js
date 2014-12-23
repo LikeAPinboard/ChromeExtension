@@ -153,7 +153,7 @@ PinboardRss.prototype.addCategory = function() {
  * @return Void
  */
 PinboardRss.prototype.sendRssData = function() {
-    var nodes    = this.form.querySelectorAll("input[type=text]"),
+    var nodes    = this.form.querySelectorAll("input[type=text], select"),
         postData = [],
         config   = JSON.parse(localStorage.getItem("pinboard-token")),
         xhr      = new XMLHttpRequest(),
