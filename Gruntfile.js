@@ -5,6 +5,9 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-sass");
     grunt.loadNpmTasks("grunt-contrib-copy");
     grunt.loadNpmTasks("grunt-contrib-cssmin");
+    grunt.loadNpmTasks("grunt-crx-pkg");
+
+    var pemFile = process.cwd() + "/build/LikeAPinboard.pem";
 
     grunt.initConfig({
         paths: {
@@ -55,10 +58,22 @@ module.exports = function(grunt) {
                 dest: "<%= paths.dest %>/",
                 filter: "isFile"
             }
+        },
+
+        crx_pkg: {
+            build: {
+                options: {
+                    pem: ( grunt.file.exists(pemFile) ) ? pemFile: "",
+                    srcFolder: "<%= paths.dest %>",
+                    destFolder: "./prod/LikeaPinboard.crx"
+                }
+            }
         }
+
     });
 
     grunt.registerTask("js", ["sprockets", "uglify"]);
     grunt.registerTask("css", ["sass", "cssmin"]);
     grunt.registerTask("default", ["js", "css", "copy"]);
+    grunt.registerTask("build", ["js", "css", "copy", "crx_pkg"]);
 };

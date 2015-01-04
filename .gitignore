@@ -29,3 +29,6 @@ node_modules
 
 LikeAPinboard.crx
 build.pem
+tem.pem
+key.pem
+prod/

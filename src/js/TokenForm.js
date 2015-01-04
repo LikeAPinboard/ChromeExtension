@@ -168,7 +168,7 @@ TokenForm.prototype.handleEvent = function(evt) {
             this.hostError.textContent = "Host must not empty!";
             this.hostError.classList.remove("hidden");
         }.bind(this));
-    } else if ( ! /^https?:\/\/[\w\-\._]+(?:\:[0-9]+)$/.test(host) ) {
+    } else if ( ! /^https?:\/\/[\w\-\._]+(?:\:[0-9]+)?$/.test(host) ) {
         errors.push(function() {
             this.hostError.textContent = "Host must be URL format!";
             this.hostError.classList.remove("hidden");
